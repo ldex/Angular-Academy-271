@@ -1,18 +1,25 @@
-# Angular Academy Demo RxJS Start
+# Angular Academy Demo RxJS
 
-Starter Project for the RxJS demo of <a href="https://angular.ac" target="_blank">Angular Academy</a>.
+Demo Project for the RxJS part of <a href="https://angular.ac" target="_blank">Angular Academy</a>.
 
 [![Angular Academy](https://www.angularacademy.ca/images/classroom.jpg "Angular Academy")](https://www.angularacademy.ca)
 
-Angular Academy is the #1 hands-on instructor-led Angular training provider.
+Angular Academy is a world-class hands-on instructor-led Angular training provider.
 We have a long history of <a href="https://www.angularacademy.ca/world-firsts" target="_blank">World Firsts</a>...
 
 Visit www.angularacademy.ca for our list of Angular related courses:
-* Angular Fundamentals
-* Advanced Angular
-* RxJS Workshop
-* Angular Architecture
-* Testing Angular
+* <a href="https://www.angularacademy.ca/courses/angular-fundamentals-training" target="_blank">Angular Fundamentals</a>
+* <a href="https://www.angularacademy.ca/courses/advanced-angular-training" target="_blank">Advanced Angular</a>
+* <a href="https://www.angularacademy.ca/courses/testing-angular-training" target="_blank">Testing Angular</a>
+* <a href="https://www.angularacademy.ca/courses/angular-rxjs-training" target="_blank">RxJS Workshop</a>
+* <a href="https://www.angularacademy.ca/courses/angular-architecture-training" target="_blank">Angular Architecture</a>
+* <a href="https://www.angularacademy.ca/courses/advanced-angular-testing-training" target="_blank">Advanced Angular Testing</a>
+
+## Angular Certifications!
+
+Test your Angular skills, try a certification!
+
+[![Angular Academy](https://www.angularacademy.ca/images/cert.png "Angular Certifications")](https://www.angularacademy.ca/angular-certification)
 
 
 ## Local installation
