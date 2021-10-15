@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { catchError, delay, shareReplay, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { catchError, delay, first, map, mergeAll, shareReplay, tap } from 'rxjs/operators';
 import { Product } from './product.interface';
 
 @Injectable({
@@ -10,23 +10,52 @@ import { Product } from './product.interface';
 export class ProductService {
 
   private baseUrl = 'https://storerestservice.azurewebsites.net/api/products/';
-  products$: Observable<Product[]>;
 
-  constructor(private http: HttpClient) { 
+  private productsSubject = new BehaviorSubject<Product[]>([]);
+  products$: Observable<Product[]> = this.productsSubject.asObservable();
+
+  mostExpensiveProduct$: Observable<Product>;
+  productsToLoad = 10;
+
+  constructor(private http: HttpClient) {
     this.initProducts();
+    this.initMostExpensiveProduct();
   }
 
-  initProducts() {
-    let url:string = this.baseUrl + `?$orderby=ModifiedDate%20desc`;
+  private initMostExpensiveProduct() {
+    this.mostExpensiveProduct$ =
+      this
+      .products$
+      .pipe(
+        map(products => [...products].sort((p1, p2) => p1.price > p2.price ? -1 : 1)),
+        // [{}, {}, {}]
+        mergeAll(),
+        // {}, {}, {}
+        first()
+      )
+  }
 
-    this.products$ = this
-                      .http
-                      .get<Product[]>(url)
-                      .pipe(
-                        delay(1500),
-                        tap(console.table),
-                        shareReplay()
-                      );
+
+  initProducts(skip = 0, take = this.productsToLoad) {
+    let url = this.baseUrl + `?$skip=${skip}&$top=${take}&$orderby=ModifiedDate%20desc`;
+
+    this
+      .http
+      .get<Product[]>(url)
+      .pipe(
+        delay(1500),
+        tap(console.table),
+        shareReplay(),
+        map(
+          newProducts => {
+            let currentProducts = this.productsSubject.value;
+            return currentProducts.concat(newProducts);
+          }
+        )
+      )
+      .subscribe(
+        allProducts => this.productsSubject.next(allProducts)
+      );
   }
 
   insertProduct(newProduct: Product): Observable<Product> {
@@ -34,6 +63,6 @@ export class ProductService {
   }
 
   deleteProduct(id: number): Observable<any> {
-    return this.http.delete(this.baseUrl + id);           
+    return this.http.delete(this.baseUrl + id);
   }
 }
