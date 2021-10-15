@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { catchError, delay, first, map, mergeAll, shareReplay, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, delay, filter, first, map, mergeAll, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Product } from './product.interface';
 
 @Injectable({
@@ -14,12 +14,23 @@ export class ProductService {
   private productsSubject = new BehaviorSubject<Product[]>([]);
   products$: Observable<Product[]> = this.productsSubject.asObservable();
 
+  productsTotalNumber$: Observable<number>;
   mostExpensiveProduct$: Observable<Product>;
   productsToLoad = 10;
 
   constructor(private http: HttpClient) {
     this.initProducts();
     this.initMostExpensiveProduct();
+    this.initProductsTotalNumber();
+  }
+
+  initProductsTotalNumber() {
+    this.productsTotalNumber$ = this.http.get<number>(this.baseUrl + "count");
+  }
+
+  resetList() {
+    this.productsSubject.next([]);
+    this.initProducts();
   }
 
   private initMostExpensiveProduct() {
@@ -27,11 +38,17 @@ export class ProductService {
       this
       .products$
       .pipe(
-        map(products => [...products].sort((p1, p2) => p1.price > p2.price ? -1 : 1)),
-        // [{}, {}, {}]
-        mergeAll(),
-        // {}, {}, {}
-        first()
+        filter(products => products.length > 0),
+        switchMap(
+          products => of(products)
+                      .pipe(
+                        map(products => [...products].sort((p1, p2) => p1.price > p2.price ? -1 : 1)),
+                        // [{}, {}, {}]
+                        mergeAll(),
+                        // {}, {}, {}
+                        first()
+                      )
+        )
       )
   }
 

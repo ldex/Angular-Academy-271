@@ -4,6 +4,7 @@
 
 <div class="right">
     {{ productsNumber$ | async }} products loaded /
+    {{ productsTotalNumber$ | async }} total on server /
 
     {favourites, plural,
     =0 {no favourite}
@@ -54,7 +55,7 @@
         Next Page >
     </button>
 
-    <button (click)="loadMore()" *ngIf="(productsNumber$ | async) <= end">
+    <button (click)="loadMore()" *ngIf="(productsNumber$ | async) <= end && !(isLastPage$ | async)">
         Load {{productsToLoad}} more...
     </button>
 </div>
